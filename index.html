@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>McDonald's — Red Local</title>
+<link rel="icon" type="image/webp" href="image/mcdonalds-fav-icon.webp">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --red: #DA291C;
+    --yellow: #FFC72C;
+    --dark-red: #b71c1c;
+    --white: #ffffff;
+  }
+  body {
+    font-family: 'Arial Rounded MT Bold', 'Arial Black', sans-serif;
+    background: var(--red);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  /* LOADING SCREEN */
+  #loading-screen {
+    position: fixed;
+    inset: 0;
+    background: var(--red);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+    z-index: 100;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  #loading-screen.hide {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+  }
+  .logo-wrapper {
+    animation: pulse-logo 2s ease-in-out infinite;
+    filter: drop-shadow(0 8px 32px rgba(0,0,0,0.3));
+  }
+  @keyframes pulse-logo {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.05); }
+  }
+  .logo-wrapper img {
+    width: 220px;
+    height: auto;
+    display: block;
+  }
+  .spinner-ring {
+    width: 52px;
+    height: 52px;
+    border: 5px solid rgba(255,199,44,0.25);
+    border-top-color: var(--yellow);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .status-label {
+    color: var(--yellow);
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    opacity: 0.85;
+    text-align: center;
+  }
+  .status-text {
+    color: var(--white);
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.6;
+  }
+  .dots span {
+    opacity: 0;
+    animation: dot-appear 1.4s infinite;
+  }
+  .dots span:nth-child(1) { animation-delay: 0s; }
+  .dots span:nth-child(2) { animation-delay: 0.3s; }
+  .dots span:nth-child(3) { animation-delay: 0.6s; }
+  @keyframes dot-appear {
+    0%, 100% { opacity: 0; }
+    50%       { opacity: 1; }
+  }
+  .progress-bar-track {
+    width: 220px;
+    height: 4px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--yellow);
+    border-radius: 99px;
+    width: 0%;
+    animation: progress-fill 5s ease-out forwards;
+  }
+  @keyframes progress-fill {
+    0%   { width: 0%; }
+    30%  { width: 35%; }
+    60%  { width: 68%; }
+    85%  { width: 88%; }
+    100% { width: 100%; }
+  }
+
+  /* MAIN PAGE */
+  #main-page {
+    position: fixed;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease 0.4s;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  #main-page.show {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: zoom-in 1.4s ease forwards;
+    opacity: 0;
+  }
+  @keyframes zoom-in {
+    from { opacity: 0; transform: scale(1.06); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(218,41,28,0.1) 0%, transparent 40%, rgba(0,0,0,0.45) 100%);
+    pointer-events: none;
+  }
+  .network-badge {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: rgba(255,199,44,0.92);
+    color: var(--dark-red);
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: slide-up 0.9s ease 1.4s both;
+  }
+  .network-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #27ae60;
+    animation: blink 1.5s ease infinite;
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+  }
+  .brand-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 28px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(to top, rgba(0,0,0,0.65), transparent);
+    animation: slide-up 0.9s ease 1.2s both;
+  }
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .brand-bar img {
+    width: 52px;
+    height: auto;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+  }
+  .brand-text {
+    color: white;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+  }
+  .brand-text span { color: var(--yellow); }
+</style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <div class="logo-wrapper">
+    <img src="image/McDonalds_-_Logotipo.webp" alt="McDonald's Logo">
+  </div>
+  <div class="spinner-ring"></div>
+  <div>
+    <div class="status-label">Sistema McDonald's</div>
+    <div class="status-text">
+      Conectando a la red local<span class="dots"><span>.</span><span>.</span><span>.</span></span>
+    </div>
+  </div>
+  <div class="progress-bar-track">
+    <div class="progress-bar-fill"></div>
+  </div>
+</div>
+
+<!-- MAIN PAGE -->
+<div id="main-page">
+  <img class="main-image" src="image/MC.webp" alt="McDonald's" id="hero-img"/>
+  <div class="image-overlay"></div>
+  <div class="network-badge">
+    <div class="network-dot"></div>
+    Red local conectada
+  </div>
+  <div class="brand-bar">
+    <img src="image/McDonalds_-_Logotipo.webp" alt="McDonald's">
+    <div class="brand-text"><span>Me encanta</span> — Bienvenido</div>
+  </div>
+</div>
+
+<script>
+  const loading = document.getElementById('loading-screen');
+  const main    = document.getElementById('main-page');
+  const preload = new Image();
+  preload.src   = 'image/MC.webp';
+
+  setTimeout(() => {
+    loading.classList.add('hide');
+    main.classList.add('show');
+    setTimeout(() => loading.remove(), 900);
+  }, 5000);
+</script>
+</body>
+</html>
